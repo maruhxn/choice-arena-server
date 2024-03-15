@@ -1,8 +1,10 @@
 package com.maruhxn.choicearena.global.error.exception;
 
 import com.maruhxn.choicearena.global.error.ErrorCode;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public abstract class GlobalException extends RuntimeException {
     private final ErrorCode code;
     private final HttpStatus httpStatus;
