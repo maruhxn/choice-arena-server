@@ -17,12 +17,14 @@ public class ChoiceArenaOAuth2User implements OAuth2User, Serializable {
     private final String provider;
     private final Map<String, Object> attributes;
     private final Role role;
+    private final String username;
     private final String email;
 
     public ChoiceArenaOAuth2User(Role role, OAuth2ProviderUser oAuth2ProviderUser) {
         this.provider = oAuth2ProviderUser.getProvider();
         this.role = role;
         this.attributes = oAuth2ProviderUser.getAttributes();
+        this.username = oAuth2ProviderUser.getUsername();
         this.email = oAuth2ProviderUser.getEmail();
     }
 
@@ -41,7 +43,7 @@ public class ChoiceArenaOAuth2User implements OAuth2User, Serializable {
 
     @Override
     public String getName() {
-        return this.provider;
+        return this.username;
     }
 
     public String getEmail() {
