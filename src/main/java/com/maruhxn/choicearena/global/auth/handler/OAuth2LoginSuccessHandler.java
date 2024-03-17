@@ -1,5 +1,6 @@
 package com.maruhxn.choicearena.global.auth.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maruhxn.choicearena.global.auth.application.JwtProvider;
 import com.maruhxn.choicearena.global.auth.dto.TokenDto;
 import com.maruhxn.choicearena.global.auth.model.ChoiceArenaOAuth2User;
@@ -8,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -28,6 +31,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -40,7 +46,12 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String targetUri = createUri(tokenDto, principal.getName());
 
         jwtProvider.setHeader(response, tokenDto);
-        response.sendRedirect(targetUri);
+//        response.sendRedirect(targetUri);
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+
+        objectMapper.writeValue(response.getWriter(), tokenDto);
     }
 
     private String createUri(TokenDto tokenDto, String username) {
