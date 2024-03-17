@@ -36,12 +36,16 @@ public class AuthService {
 
     private Member register(OAuth2ProviderUser oAuth2ProviderUser) {
 
+        Role role = oAuth2ProviderUser.getEmail().equals("maruhan1016@gmail.com")
+                ? Role.ROLE_ADMIN
+                : Role.ROLE_USER;
+
         Member member = Member.builder()
                 .username(oAuth2ProviderUser.getUsername())
                 .email(oAuth2ProviderUser.getEmail())
                 .provider(OAuth2Provider.valueOf(oAuth2ProviderUser.getProvider().toUpperCase()))
                 .providerId(oAuth2ProviderUser.getProviderId())
-                .role(Role.ROLE_USER)
+                .role(role)
                 .build();
 
         memberRepository.save(member);
