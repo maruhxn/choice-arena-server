@@ -1,19 +1,25 @@
 package com.maruhxn.choicearena.global.config;
 
 import com.maruhxn.choicearena.global.auth.application.ChoiceArenaOAuth2UserService;
+import com.maruhxn.choicearena.global.auth.filter.JwtExceptionFilter;
+import com.maruhxn.choicearena.global.auth.filter.JwtVerificationFilter;
+import com.maruhxn.choicearena.global.auth.handler.JwtAccessDeniedHandler;
 import com.maruhxn.choicearena.global.auth.handler.OAuth2EntryPoint;
 import com.maruhxn.choicearena.global.auth.handler.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,7 +35,16 @@ public class SecurityConfig {
 
     private final OAuth2EntryPoint oAuth2EntryPoint;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final ChoiceArenaOAuth2UserService choiceArenaOAuth2UserService;
+    private final JwtVerificationFilter jwtVerificationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) ->
+                web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -58,8 +73,11 @@ public class SecurityConfig {
                                 )
                                 .successHandler(oAuth2LoginSuccessHandler)
                 )
+                .addFilterBefore(jwtVerificationFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class)
                 .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(oAuth2EntryPoint));
+                        exceptionHandling.authenticationEntryPoint(oAuth2EntryPoint)
+                                .accessDeniedHandler(jwtAccessDeniedHandler));
 
         return http.build();
     }
