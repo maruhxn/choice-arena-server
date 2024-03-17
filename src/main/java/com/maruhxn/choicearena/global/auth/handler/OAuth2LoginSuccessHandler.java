@@ -2,6 +2,7 @@ package com.maruhxn.choicearena.global.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maruhxn.choicearena.global.auth.application.JwtProvider;
+import com.maruhxn.choicearena.global.auth.application.JwtService;
 import com.maruhxn.choicearena.global.auth.dto.TokenDto;
 import com.maruhxn.choicearena.global.auth.model.ChoiceArenaOAuth2User;
 import jakarta.servlet.ServletException;
@@ -32,6 +33,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private JwtProvider jwtProvider;
 
     @Autowired
+    private JwtService jwtService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Override
@@ -45,6 +49,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         TokenDto tokenDto = jwtProvider.createJwt(principal);
         String targetUri = createUri(tokenDto, principal.getName());
 
+        jwtService.saveRefreshToken(principal, tokenDto);
         jwtProvider.setHeader(response, tokenDto);
 //        response.sendRedirect(targetUri);
         response.setStatus(HttpStatus.FORBIDDEN.value());

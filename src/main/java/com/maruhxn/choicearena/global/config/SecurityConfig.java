@@ -40,6 +40,7 @@ public class SecurityConfig {
     private final JwtVerificationFilter jwtVerificationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
 
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) ->
@@ -62,7 +63,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz ->
                         authz
-                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/", "/api/auth/refresh").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 ->

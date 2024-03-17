@@ -17,6 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.maruhxn.choicearena.global.common.Constants.ACCESS_TOKEN_HEADER;
+import static com.maruhxn.choicearena.global.common.Constants.REFRESH_TOKEN_HEADER;
+
 @Component
 public class JwtProvider {
 
@@ -28,8 +31,6 @@ public class JwtProvider {
 
     private SecretKey secretKey;
     private JwtParser jwtParser;
-    public static final String ACCESS_TOKEN_HEADER = "Authorization";
-    public static final String REFRESH_TOKEN_HEADER = "Refresh";
     public static final String BEARER_PREFIX = "Bearer ";
 
 
@@ -98,9 +99,9 @@ public class JwtProvider {
                 .getPayload();
     }
 
-    public boolean validate(String accessToken) {
+    public boolean validate(String token) {
         try {
-            return getPayload(accessToken)
+            return getPayload(token)
                     .getExpiration()
                     .after(new Date());
         } catch (SecurityException e) {
@@ -122,5 +123,12 @@ public class JwtProvider {
         String role = payload.get("role").toString();
 
         return ChoiceArenaOAuth2User.of(email, username, provider, Role.valueOf(role));
+    }
+
+    public String getBearerTokenToString(String bearerToken) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.split(" ")[1];
+        }
+        return null;
     }
 }
