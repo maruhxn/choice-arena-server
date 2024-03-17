@@ -4,6 +4,7 @@ import com.maruhxn.choicearena.global.auth.application.ChoiceArenaOAuth2UserServ
 import com.maruhxn.choicearena.global.auth.filter.JwtExceptionFilter;
 import com.maruhxn.choicearena.global.auth.filter.JwtVerificationFilter;
 import com.maruhxn.choicearena.global.auth.handler.JwtAccessDeniedHandler;
+import com.maruhxn.choicearena.global.auth.handler.JwtLogoutSuccessHandler;
 import com.maruhxn.choicearena.global.auth.handler.OAuth2EntryPoint;
 import com.maruhxn.choicearena.global.auth.handler.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class SecurityConfig {
     private final ChoiceArenaOAuth2UserService choiceArenaOAuth2UserService;
     private final JwtVerificationFilter jwtVerificationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
+    private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
 
 
     @Bean
@@ -73,6 +75,13 @@ public class SecurityConfig {
                                                 .userService(choiceArenaOAuth2UserService)
                                 )
                                 .successHandler(oAuth2LoginSuccessHandler)
+                )
+                .logout(logout ->
+                        logout
+                                .clearAuthentication(true)
+                                .invalidateHttpSession(true)
+                                .logoutUrl("/api/auth/logout")
+                                .logoutSuccessHandler(jwtLogoutSuccessHandler)
                 )
                 .addFilterBefore(jwtVerificationFilter, OAuth2AuthorizationRequestRedirectFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class)
