@@ -35,7 +35,8 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         String accessToken = jwtProvider.resolveAccessToken(request);
 
         // validation
-        if (!StringUtils.hasText(accessToken) || !jwtProvider.validate(accessToken)) {
+        if (!StringUtils.hasText(accessToken)) {
+            jwtProvider.validate(accessToken);
             filterChain.doFilter(request, response);
             return;
         }

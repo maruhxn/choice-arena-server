@@ -3,6 +3,8 @@ package com.maruhxn.choicearena.global.auth.application;
 import com.maruhxn.choicearena.domain.member.domain.Role;
 import com.maruhxn.choicearena.global.auth.dto.TokenDto;
 import com.maruhxn.choicearena.global.auth.model.ChoiceArenaOAuth2User;
+import com.maruhxn.choicearena.global.error.ErrorCode;
+import com.maruhxn.choicearena.global.error.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -99,19 +101,19 @@ public class JwtProvider {
                 .getPayload();
     }
 
-    public boolean validate(String token) {
+    public void validate(String token) {
         try {
-            return getPayload(token)
+            getPayload(token)
                     .getExpiration()
                     .after(new Date());
         } catch (SecurityException e) {
-            throw new JwtException("검증 정보가 올바르지 않습니다.");
+            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "검증 정보가 올바르지 않습니다.");
         } catch (MalformedJwtException e) {
-            throw new JwtException("유효하지 않은 토큰입니다.");
+            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "유효하지 않은 토큰입니다.");
         } catch (ExpiredJwtException e) {
-            throw new JwtException("기한이 만료된 토큰입니다.");
+            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "기한이 만료된 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            throw new JwtException("지원되지 않는 토큰입니다.");
+            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "지원되지 않는 토큰입니다.");
         }
     }
 

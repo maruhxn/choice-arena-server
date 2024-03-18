@@ -47,9 +47,7 @@ public class JwtService {
     ) {
         String refreshToken = jwtProvider.getBearerTokenToString(bearerRefreshToken);
 
-        if (!jwtProvider.validate(refreshToken)) {
-            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN);
-        }
+        jwtProvider.validate(refreshToken);
 
         RefreshToken findRefreshToken = refreshTokenRepository.findByPayload(refreshToken)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_REFRESH_TOKEN));
