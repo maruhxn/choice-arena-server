@@ -13,12 +13,17 @@ public enum ErrorCode {
 
     /* UNAUTHORIZED 401 */
     UNAUTHORIZED("로그인이 필요한 서비스입니다."),
+    INVALID_TOKEN("유효하지 않은 토큰입니다."),
+    EMPTY_REFRESH_TOKEN("Refresh Token이 비어있습니다."),
+
 
     /* FORBIDDEN 403 */
     FORBIDDEN("권한이 없습니다."),
 
     /* NOT FOUND 404 */
     NOT_FOUND_RESOURCE("요청하신 자원이 존재하지 않습니다."),
+    NOT_FOUND_MEMBER("유저 정보가 존재하지 않습니다."),
+    NOT_FOUND_REFRESH_TOKEN("Refresh Token 정보가 존재하지 않습니다."),
 
     /* UNPROCESSABLE CONTENT 422 */
     EXISTING_RESOURCE("이미 존재하는 리소스입니다."),
