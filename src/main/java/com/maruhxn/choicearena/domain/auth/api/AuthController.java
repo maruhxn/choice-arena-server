@@ -24,9 +24,8 @@ public class AuthController {
     @GetMapping("/refresh")
     public ResponseEntity<DataResponse<TokenDto>> refresh(
             HttpServletResponse response,
-            @RequestHeader(value = REFRESH_TOKEN_HEADER, required = true) String bearerRefreshToken
+            @RequestHeader(value = REFRESH_TOKEN_HEADER) String bearerRefreshToken
     ) {
-        System.out.println("bearerRefreshToken = " + bearerRefreshToken);
         TokenDto tokenDto = jwtService.refresh(bearerRefreshToken, response);
         return ResponseEntity.ok(DataResponse.of("Token Refresh 성공", tokenDto));
     }
